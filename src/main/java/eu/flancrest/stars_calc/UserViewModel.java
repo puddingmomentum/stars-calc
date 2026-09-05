@@ -7,198 +7,205 @@ import org.apache.logging.log4j.LogManager;
 
 public class UserViewModel {
 
-        private static final Logger logger = LogManager.getLogger(UserViewModel.class);
+	private static final Logger logger = LogManager.getLogger(UserViewModel.class);
 
-        private int getMiningRate() {
-                String sMiningRate = iMiningRate.getValue();
-                int MiningRate = 0;
+	private int getMiningRate() {
+		String sMiningRate = iMiningRate.getValue();
+		int MiningRate = 0;
 
-                if (sMiningRate.isBlank()) {
-                        return 0;
-                }
+		if (sMiningRate.isBlank()) {
+			return 0;
+		}
 
-                String sanitized = sMiningRate.replaceAll("[^0-9]", "");
-                MiningRate = Integer.parseInt(sanitized);
-                logger.info("MiningRate: {}", MiningRate);
+		String sanitized = sMiningRate.replaceAll("[^0-9]", "");
+		MiningRate = Integer.parseInt(sanitized);
+		logger.info("MiningRate: {}", MiningRate);
 
-                return MiningRate;
-        }
+		return MiningRate;
+	}
 
-        private int getResource() {
-                String sResources = numResources.getValue();
-                int iResources = 0;
+	private int getResource() {
+		String sResources = numResources.getValue();
+		int iResources = 0;
 
-                if (sResources.isBlank()) {
-                        return 0;
-                }
+		if (sResources.isBlank()) {
+			return 0;
+		}
 
-                String sanitized = sResources.replaceAll("[^0-9]", "");
-                iResources = Integer.parseInt(sanitized);
+		String sanitized = sResources.replaceAll("[^0-9]", "");
+		iResources = Integer.parseInt(sanitized);
 
-                logger.info("iResources: {}", iResources);
+		logger.info("iResources: {}", iResources);
 
-                return iResources;
-        }
+		return iResources;
+	}
 
-        private int getAutoMines() {
-                String sAutoMines = numAutoBuildMines.getValue();
-                int iAutoMines = 0;
+	private int getAutoMines() {
+		String sAutoMines = numAutoBuildMines.getValue();
+		int iAutoMines = 0;
 
-                if (sAutoMines.isBlank()) {
-                        return 0;
-                }
+		if (sAutoMines.isBlank()) {
+			return 0;
+		}
 
-                String sanitized = sAutoMines.replaceAll("[^0-9]", "");
-                iAutoMines = Integer.parseInt(sanitized);
+		String sanitized = sAutoMines.replaceAll("[^0-9]", "");
+		iAutoMines = Integer.parseInt(sanitized);
 
-                return iAutoMines;
-        }
+		logger.info("AutoMines: {}", iAutoMines);
 
-        private int getAutoFactories() {
-                String sAutoFactories = numAutoBuildFactories.getValue();
-                int iAutoFactories = 0;
+		return iAutoMines;
+	}
 
-                if (sAutoFactories.isBlank()) {
-                        return 0;
-                }
+	private int getAutoFactories() {
+		String sAutoFactories = numAutoBuildFactories.getValue();
+		int iAutoFactories = 0;
 
-                String sanitized = sAutoFactories.replaceAll("[^0-9]", "");
-                iAutoFactories = Integer.parseInt(sanitized);
+		if (sAutoFactories.isBlank()) {
+			return 0;
+		}
 
-                return iAutoFactories;
-        }
+		String sanitized = sAutoFactories.replaceAll("[^0-9]", "");
+		iAutoFactories = Integer.parseInt(sanitized);
 
-        public void calc() {
-                int result = calcFactories();
-                StringBuilder sb = new StringBuilder();
-                sb.append(result);
-                numPossExtraFactories.setValue(sb.toString());
+		logger.info("AutoMines: {}", iAutoFactories);
 
-                sb.setLength(0);
-                result = calcMines();
-                sb.append(result);
-                numPossExtraMines.setValue(sb.toString());
-        }
+		return iAutoFactories;
+	}
 
-        public void clear() {
-                numResources.setValue("");
-                numAutoBuildFactories.setValue("");
-                numAutoBuildMines.setValue("");
-                iMiningRate.setValue("");
-                numPossExtraMines.setValue("");
-                numPossExtraFactories.setValue("");
-                numDesiredFactories.setValue("");
-                numPossMines.setValue("");
-                numDesiredMines.setValue("");
-                numPossFactories.setValue("");
-        }
+	public void calc() {
+		int result = calcFactories();
+		StringBuilder sb = new StringBuilder();
+		sb.append(result);
+		numPossExtraFactories.setValue(sb.toString());
 
-        private int calcFactories() {
-                int iResources = getResource();
-                int iGermaniumMiningRate = getMiningRate();
-                int iAutoMines = getAutoMines();
-                int iAutoFactories = getAutoFactories();
-                int iAutoMineralsUsed = 0, iAutoResourcesUsed = 0;
+		sb.setLength(0);
+		result = calcMines();
+		sb.append(result);
+		numPossExtraMines.setValue(sb.toString());
+	}
 
-                float fResources = 0, fGermanium = 0;
+	public void clear() {
+		numResources.setValue("");
+		numAutoBuildFactories.setValue("");
+		numAutoBuildMines.setValue("");
+		iMiningRate.setValue("");
+		numPossExtraMines.setValue("");
+		numPossExtraFactories.setValue("");
+		numDesiredFactories.setValue("");
+		numPossMines.setValue("");
+		numDesiredMines.setValue("");
+		numPossFactories.setValue("");
+	}
 
-                iAutoMineralsUsed = iAutoFactories * 4;
-                iAutoResourcesUsed = (iAutoFactories * 10) + (iAutoMines * 5);
+	private int calcFactories() {
+		int iResources = getResource();
+		int iGermaniumMiningRate = getMiningRate();
+		int iAutoMines = getAutoMines();
+		int iAutoFactories = getAutoFactories();
+		int iAutoMineralsUsed = 0, iAutoResourcesUsed = 0;
+		int iResourcesRemaining = 0, iMineralsRemaining = 0;
 
-                iResources = iResources - iAutoResourcesUsed;
-                iGermaniumMiningRate = iGermaniumMiningRate - iAutoMineralsUsed;
+		float fResources = 0, fGermanium = 0;
 
-                if (iResources > 0) {
-                        fResources = iResources / 10;
-                }
+		iAutoMineralsUsed = iAutoFactories * 4;
+		iAutoResourcesUsed = (iAutoFactories * 10) + (iAutoMines * 5);
 
-                if (iGermaniumMiningRate > 0) {
-                        fGermanium = iGermaniumMiningRate / 4;
-                }
+		iResourcesRemaining = iResources - iAutoResourcesUsed;
+		iMineralsRemaining = iGermaniumMiningRate - iAutoMineralsUsed;
 
-                return fResources < fGermanium ? (int) fResources : (int) fGermanium;
-        }
+		logger.info("Resources Remaining: {}, Minerals Remaining {}", iResourcesRemaining, iMineralsRemaining);
 
-        private int calcMines() {
-                int iResources = getResource();
-                int iAutoMines = getAutoMines();
-                int iAutoFactories = getAutoFactories();
-                int iAutoResourcesUsed = 0, iMines = 0;
+		if (iResources > 0) {
+			fResources = iResourcesRemaining / 10;
+		}
 
-                float fResources = 0;
+		if (iGermaniumMiningRate > 0) {
+			fGermanium = iMineralsRemaining / 4;
+		}
 
-                iAutoResourcesUsed = (iAutoFactories * 10) + (iAutoMines * 5);
+		return fResources < fGermanium ? (int) fResources : (int) fGermanium;
+	}
 
-                iResources = iResources - iAutoResourcesUsed;
+	private int calcMines() {
+		int iResources = getResource();
+		int iAutoMines = getAutoMines();
+		int iAutoFactories = getAutoFactories();
+		int iAutoResourcesUsed = 0, iMines = 0;
 
-                if (iResources > 0) {
-                        fResources = iResources / 5;
-                }
+		float fResources = 0;
 
-                logger.info("Mines: {} ", fResources);
+		iAutoResourcesUsed = (iAutoFactories * 10) + (iAutoMines * 5);
 
-                iMines = (int) fResources;
+		iResources = iResources - iAutoResourcesUsed;
 
-                return iMines;
-        }
+		if (iResources > 0) {
+			fResources = iResources / 5;
+		}
 
-        private final StringProperty numResources = new SimpleStringProperty("");
+		logger.info("Mines: {} ", fResources);
 
-        public StringProperty numResources() {
-                return numResources;
-        }
+		iMines = (int) fResources;
 
-        private final StringProperty numAutoBuildFactories = new SimpleStringProperty("");
+		return iMines;
+	}
 
-        public StringProperty numAutoBuildFactories() {
-                return numAutoBuildFactories;
-        }
+	private final StringProperty numResources = new SimpleStringProperty("");
 
-        private final StringProperty numAutoBuildMines = new SimpleStringProperty("");
+	public StringProperty numResources() {
+		return numResources;
+	}
 
-        public StringProperty numAutoBuildMines() {
-                return numAutoBuildMines;
-        }
+	private final StringProperty numAutoBuildFactories = new SimpleStringProperty("");
 
-        private final StringProperty iMiningRate = new SimpleStringProperty("");
+	public StringProperty numAutoBuildFactories() {
+		return numAutoBuildFactories;
+	}
 
-        public StringProperty iMiningRate() {
-                return iMiningRate;
-        }
+	private final StringProperty numAutoBuildMines = new SimpleStringProperty("");
 
-        private final StringProperty numPossExtraMines = new SimpleStringProperty("");
+	public StringProperty numAutoBuildMines() {
+		return numAutoBuildMines;
+	}
 
-        public StringProperty numPossExtraMines() {
-                return numPossExtraMines;
-        }
+	private final StringProperty iMiningRate = new SimpleStringProperty("");
 
-        private final StringProperty numPossExtraFactories = new SimpleStringProperty("");
+	public StringProperty iMiningRate() {
+		return iMiningRate;
+	}
 
-        public StringProperty numPossExtraFactories() {
-                return numPossExtraFactories;
-        }
+	private final StringProperty numPossExtraMines = new SimpleStringProperty("");
 
-        private final StringProperty numDesiredFactories = new SimpleStringProperty("");
+	public StringProperty numPossExtraMines() {
+		return numPossExtraMines;
+	}
 
-        public StringProperty numDesiredFactories() {
-                return numDesiredFactories;
-        }
+	private final StringProperty numPossExtraFactories = new SimpleStringProperty("");
 
-        private final StringProperty numPossMines = new SimpleStringProperty("");
+	public StringProperty numPossExtraFactories() {
+		return numPossExtraFactories;
+	}
 
-        public StringProperty numPossMines() {
-                return numPossMines;
-        }
+	private final StringProperty numDesiredFactories = new SimpleStringProperty("");
 
-        private final StringProperty numDesiredMines = new SimpleStringProperty("");
+	public StringProperty numDesiredFactories() {
+		return numDesiredFactories;
+	}
 
-        public StringProperty numDesiredMines() {
-                return numDesiredMines;
-        }
+	private final StringProperty numPossMines = new SimpleStringProperty("");
 
-        private final StringProperty numPossFactories = new SimpleStringProperty("");
+	public StringProperty numPossMines() {
+		return numPossMines;
+	}
 
-        public StringProperty numPossFactories() {
-                return numPossFactories;
-        }
+	private final StringProperty numDesiredMines = new SimpleStringProperty("");
+
+	public StringProperty numDesiredMines() {
+		return numDesiredMines;
+	}
+
+	private final StringProperty numPossFactories = new SimpleStringProperty("");
+
+	public StringProperty numPossFactories() {
+		return numPossFactories;
+	}
 }
